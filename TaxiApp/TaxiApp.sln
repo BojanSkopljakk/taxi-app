@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "TaxiApp", "TaxiApp\TaxiApp.sfproj", "{EA6857A0-B2BC-4407-BA30-972822E4813A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "AuthService\AuthService.csproj", "{00C69F0E-5D61-460B-A1D3-1241278C42DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Debug|Any CPU.Build.0 = Debug|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Debug|x64.ActiveCfg = Debug|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Debug|x64.Build.0 = Debug|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Debug|x64.Deploy.0 = Debug|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Release|Any CPU.ActiveCfg = Release|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Release|Any CPU.Build.0 = Release|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Release|Any CPU.Deploy.0 = Release|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Release|x64.ActiveCfg = Release|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Release|x64.Build.0 = Release|x64
+		{EA6857A0-B2BC-4407-BA30-972822E4813A}.Release|x64.Deploy.0 = Release|x64
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Debug|x64.Build.0 = Debug|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Release|x64.ActiveCfg = Release|Any CPU
+		{00C69F0E-5D61-460B-A1D3-1241278C42DF}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A03633B-F5A6-4A77-A7B3-8D2E00845884}
+	EndGlobalSection
+EndGlobal
