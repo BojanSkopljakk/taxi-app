@@ -1,7 +1,8 @@
 ﻿using AuthService.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
+//using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using AuthService.Models;
 
 namespace AuthService.Controllers
 {
@@ -27,6 +28,19 @@ namespace AuthService.Controllers
         {
             var result = await _userService.LoginAsync(request);
             return Ok(result);
+        }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            // Fetch all users
+            var users = await _userService.GetAllUsersAsync();
+            if (users == null || users.Count == 0)
+            {
+                return NotFound("No users found.");
+            }
+
+            return Ok(users);
         }
     }
 }

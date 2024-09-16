@@ -11,6 +11,8 @@ using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Data;
+using AuthService.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthService
 {
@@ -19,9 +21,22 @@ namespace AuthService
     /// </summary>
     internal sealed class AuthService : StatelessService
     {
-        public AuthService(StatelessServiceContext context)
+        private readonly IServiceProvider _serviceProvider;
+        public AuthService(StatelessServiceContext context, IServiceProvider serviceProvider)
             : base(context)
-        { }
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        // Example of how to use the service provider to get the ApplicationDbContext
+        public async Task SomeMethod()
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                // Use dbContext here
+            }
+        }
 
         /// <summary>
         /// Optional override to create listeners (like tcp, http) for this service instance.
@@ -44,6 +59,8 @@ namespace AuthService
                                     .UseContentRoot(Directory.GetCurrentDirectory())
                                     .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
                                     .UseUrls(url);
+                        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                            options.UseSqlServer(builder.Configuration.GetConnectionString("DevDB")));
                         builder.Services.AddControllers();
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();

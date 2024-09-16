@@ -1,26 +1,79 @@
-// /src/App.js
-
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './services/AuthContext'; // Adjust the path based on where you placed AuthContext.js
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/ProfilePage';
-import RegisterPage from './pages/RegisterPage';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
+// Components
+import LoginForm from './components/LoginForm';
+import RegisterForm from './components/RegisterForm';
+import UserProfile from './components/UserProfile';
+import UserDashboard from './components/UserDashboard';
+import DriverDashboard from './components/DriverDashboard';
+import AdminDashboard from './components/AdminDashboard';
+
+// AuthService to check if the user is authenticated
+import AuthService from './services/AuthService';
+
+// Private Route wrapper to protect routes
+const PrivateRoute = ({ children }) => {
+    return AuthService.isAuthenticated() ? children : <Navigate to="/login" />;
+};
+
+// App Component
 function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
+    return (
+        <Router>
+            <div>
+                {/* Define routes */}
+                <Routes>
+                    {/* Authentication */}
+                    <Route path="/login" element={<LoginForm />} />
+                    <Route path="/register" element={<RegisterForm />} />
+
+                    {/* User Dashboard */}
+                    <Route
+                        path="/user/dashboard"
+                        element={
+                            <PrivateRoute>
+                                <UserDashboard />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* Driver Dashboard */}
+                    <Route
+                        path="/driver/dashboard"
+                        element={
+                            <PrivateRoute>
+                                <DriverDashboard />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* Admin Dashboard */}
+                    <Route
+                        path="/admin/dashboard"
+                        element={
+                            <PrivateRoute>
+                                <AdminDashboard />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* Profile */}
+                    <Route
+                        path="/profile"
+                        element={
+                            <PrivateRoute>
+                                <UserProfile />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* Default Route: Redirect to login */}
+                    <Route path="*" element={<Navigate to="/login" />} />
+                </Routes>
+            </div>
+        </Router>
+    );
 }
 
 export default App;

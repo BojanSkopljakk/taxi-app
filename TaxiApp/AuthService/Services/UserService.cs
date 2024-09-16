@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
 //using Microsoft.AspNetCore.Identity.Data;
+using AuthService.repositories;
 
 
 namespace AuthService.Services
@@ -16,60 +17,147 @@ namespace AuthService.Services
             _userRepository = userRepository;
             _jwtTokenGenerator = jwtTokenGenerator;
         }
-        public Task<bool> DeleteUserAsync(Guid userId)
+        public async Task DeleteUserAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with ID {userId} not found.");
+            }
+            await _userRepository.DeleteUserAsync(userId);
         }
 
-        public Task<UserDTO> GetUserByIdAsync(Guid userId)
+        public async Task<UserDTO> GetUserByIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+            return new UserDTO
+            {
+                //UserId = user.UserId,
+                Username = user.Username,
+                //Email = user.Email,
+                //Role = user.Role,
+                ProfilePictureUrl = user.ProfilePictureUrl
+            };
         }
 
-        public Task<UserDTO> LoginAsync(LoginRequest request)
+        public async Task<UserDTO> LoginAsync(LoginRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.LoginAsync(request.Email, request.Password);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var token = _jwtTokenGenerator.GenerateToken(user);
+            return new UserDTO
+            {
+                Username = user.Username,
+                Token = token,
+                ProfilePictureUrl = user.ProfilePictureUrl
+            };
         }
 
-        public Task<UserDTO> RegisterUserAsync(Models.RegisterRequest request)
+        public async Task<UserDTO> RegisterUserAsync(RegisterRequest request)
         {
-            var hashedPassword = PasswordHasher.HashPassword(request.Password);
-
+            var hasher = new PasswordHasher<User>();
             var user = new User
             {
                 UserId = Guid.NewGuid(),
                 Username = request.Username,
                 Email = request.Email,
-                PasswordHash = hashedPassword,
+                PasswordHash = hasher.HashPassword(null, request.Password),
                 Role = "User",
                 CreatedDate = DateTime.UtcNow,
                 ProfilePictureUrl = request.ProfilePictureUrl
-
             };
 
             // Save user to database
-            await _userRepository.AddUserAsync(user);
+            var registeredUser = await _userRepository.RegisterUserAsync(user);
 
             // Generate JWT token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = _jwtTokenGenerator.GenerateToken(registeredUser);
 
             // Return user data with token
-            return new UserDTO { Username = user.Username, Token = token };
+            return new UserDTO
+            {
+                Username = registeredUser.Username,
+                Token = token,
+                ProfilePictureUrl = registeredUser.ProfilePictureUrl
+                // Add other properties as needed
+            };
         }
 
-        public Task<bool> UpdateProfilePictureAsync(Guid userId, string profilePictureUrl)
+        public async Task<bool> UpdateProfilePictureAsync(Guid userId, string profilePictureUrl)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.ProfilePictureUrl = profilePictureUrl;
+            await _userRepository.UpdateUserAsync(user);
+            return true;
         }
 
-        public Task<bool> UpdateUserProfileAsync(Guid userId, UpdateUserProfileRequest request)
+        public async Task<List<UserDTO>> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            var users = await _userRepository.GetAllUsersAsync();
+            if (users == null || users.Count == 0)
+            {
+                return new List<UserDTO>();
+            }
+
+            return users.Select(user => new UserDTO
+            {
+                Username = user.Username,
+                Token = _jwtTokenGenerator.GenerateToken(user),
+                ProfilePictureUrl = user.ProfilePictureUrl
+            }).ToList();
         }
 
-        public Task<string> UploadProfilePictureAsync(IFormFile file)
+            public async Task<bool> UpdateUserProfileAsync(Guid userId, UpdateUserProfileRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.Username = request.Username ?? user.Username;
+            user.Email = request.Email ?? user.Email;
+
+            if (!string.IsNullOrEmpty(request.NewPassword))
+            {
+                var hasher = new PasswordHasher<User>();
+                user.PasswordHash = hasher.HashPassword(user, request.NewPassword);
+            }
+
+            var updatedUser = await _userRepository.UpdateUserAsync(user);
+            return updatedUser != null;
         }
+
+        public async Task<string> UploadProfilePictureAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                throw new ArgumentException("Invalid file");
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine("wwwroot", "profile-pictures", fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return "/profile-pictures/" + fileName;
+        }
+
+
     }
 }

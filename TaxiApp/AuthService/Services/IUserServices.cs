@@ -14,11 +14,13 @@ namespace AuthService.Services
         // Retrieves a user profile by user ID
         Task<UserDTO> GetUserByIdAsync(Guid userId);
 
+        Task<List<UserDTO>> GetAllUsersAsync();
+
         // Updates user profile details (including profile picture)
         Task<bool> UpdateUserProfileAsync(Guid userId, UpdateUserProfileRequest request);
 
         // Deletes a user account
-        Task<bool> DeleteUserAsync(Guid userId);
+        Task DeleteUserAsync(Guid userId);
 
         // Uploads a profile picture and returns the URL
         Task<string> UploadProfilePictureAsync(IFormFile file);

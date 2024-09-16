@@ -7,6 +7,8 @@
 
         // Optional: If the user wants to update their profile picture
         public IFormFile ProfilePicture { get; set; }
+
+        public string NewPassword { get; set; }
     }
 
 }
